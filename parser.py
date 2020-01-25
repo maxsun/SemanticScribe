@@ -31,7 +31,7 @@ def parse_blocks(blocks):
 
 def parse_note_tree(note_path):
     """Parse the note at <note_path>"""
-    text = open(NOTES_FOLDER + note_path).read() + '\n'
+    text = open(note_path).read() + '\n'
     tree = PARSER.parse(text)
     return tree
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     for path in NOTE_PATHS:
         note_title = path.replace('.md', '')
-        note_tree = parse_note_tree(path)
+        note_tree = parse_note_tree(NOTES_FOLDER + path)
         note_data = parse_blocks(note_tree.children)
         print(note_title)
         pprint(note_data)
