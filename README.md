@@ -1,5 +1,5 @@
 # Notes Parser
-Python code for parsing Markdown notes into Roam-Research like data.
+Python code for parsing Markdown notes with references into a knowledge graph. Heavily inspired by [Roam](https://roamresearch.com/).
 
 All notes have 2 main components: a title and text blocks.
 For example, we might have the file `todays_note.md` containing the markdown:
