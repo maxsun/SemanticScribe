@@ -1,7 +1,7 @@
-?start: (_NL* block)+
+?start: (_NL* block)* -> start
 block: "- " text _NL children
 text: (WORD|REF)*
-children: [_INDENT block+ _DEDENT]
+children: [_INDENT block* _DEDENT]
 REF: /\[\[/ WORD /\]\]/
 WORD: /\S+/
 %import common.WS_INLINE

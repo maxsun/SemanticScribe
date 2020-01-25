@@ -12,7 +12,7 @@ class TreeIndenter(Indenter):
     CLOSE_PAREN_types = []
     INDENT_type = '_INDENT'
     DEDENT_type = '_DEDENT'
-    tab_len = 4
+    tab_len = 2
 
 
 def parse_blocks(blocks):
@@ -31,9 +31,9 @@ def parse_blocks(blocks):
 
 def parse_note_tree(note_path):
     """Parse the note at <note_path>"""
-    text = open(note_path).read() + '\n'
+    text = open(NOTES_FOLDER + note_path).read() + '\n'
     tree = PARSER.parse(text)
-    return tree.children
+    return tree
 
 
 GRAMMAR = open('grammar.lark').read()
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     for path in NOTE_PATHS:
         note_title = path.replace('.md', '')
-        note_tree = parse_note_tree(NOTES_FOLDER + path)
-        note_data = parse_blocks(note_tree)
+        note_tree = parse_note_tree(path)
+        note_data = parse_blocks(note_tree.children)
         print(note_title)
         pprint(note_data)
