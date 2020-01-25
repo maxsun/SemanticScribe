@@ -1,2 +1,5 @@
 - My name is [[max]]
-  - I live on [[Earth]]
+  - [[/0/0]], specifically San Diego
+  - I'm 20 years old
+- [[George Washington]]
+  - Was a great man
