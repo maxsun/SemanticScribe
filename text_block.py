@@ -38,9 +38,9 @@ class TextBlock:
                     graph.add_edge(ref, child_ref)
         return graph
 
-    def to_dict(self):
+    def to_dict(self, path=''):
         """Returns self as a dictionary"""
-        children = [x.to_dict() for x in self.children]
+        children = [x.to_dict(path + '/' + str(i)) for i, x in enumerate(self.children)]
         content = []
         for token in self.content:
             content.append({
@@ -50,7 +50,8 @@ class TextBlock:
         return {
             'type': 'block',
             'children': children,
-            'content': content
+            'content': content,
+            'path': path
         }
 
     def flatten(self, path=''):
