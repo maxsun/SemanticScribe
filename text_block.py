@@ -102,6 +102,7 @@ class TextBlock:
             return self.get_by_path(tail)
         if head.isnumeric():
             return self.children[int(head)].get_by_path(tail)
+        return self.resolve_ref_block(head).get_by_path(tail)
 
     def resolve_ref_block(self, ref_text):
         """Find a block by reference"""
