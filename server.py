@@ -23,7 +23,7 @@ def ref_occurences(ref):
     data = parse_notefiles('./note_files/')
     data = data.get_by_ref(ref, recursive=True)
     print(data)
-    return jsonify([x.to_dict(path=ref + '/' + str(i)) for i, x in enumerate(data)])
+    return jsonify([x.to_dict() for i, x in enumerate(data)])
 
 
 app.run(debug=True)
