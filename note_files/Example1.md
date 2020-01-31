@@ -1,3 +1,0 @@
-- [[Max]] is 20 years old
-- Hello [[World]]
-- Goodby [[Example2]]

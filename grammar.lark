@@ -1,6 +1,6 @@
-?start: (_NL* block)* -> start
-block: "- " content _NL children
-children: [_INDENT block* _DEDENT]
+?start: (_NL* block)* -> blocks
+block: "- " content _NL blocks
+blocks: [_INDENT block* _DEDENT]
 
 content: (text|reference)+
 text: (WORD)+
