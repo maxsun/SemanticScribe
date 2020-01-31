@@ -1,8 +1,6 @@
 import React from 'react';
 import TextBlock from './TextBlock';
-
-// import { ReactComponent as Contrast } from '../assets/contrast.svg';
-// import { ReactComponent as Logo } from '../assets/favicon.svg';
+import './styles/App.css';
 
 export default class App extends React.Component {
   constructor() {
@@ -14,9 +12,9 @@ export default class App extends React.Component {
 
   render() {
     const url = new URL(window.location);
-    const ref = url.searchParams.get('ref') || '/~';
+    const ref = url.searchParams.get('ref') || '~';
     return (
-      <div>
+      <div id="App">
         <TextBlock reference={ref} />
       </div>
     );
