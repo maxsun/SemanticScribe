@@ -16,6 +16,7 @@ class Token:
     type: str
     value: str
 
+
 @dataclass
 class Block:
     '''Class representing a block with an <id> and <content>
@@ -29,6 +30,9 @@ class Block:
     content: List[Token]
     indent: int
 
+    def __repr__(self):
+        return self.id + ': ' + ' '.join([x.value for x in self.content])
+
 
 def block(content: List[Token], indent: int = 0) -> Block:
     '''Returns a block with an id generated based on <content>'''
@@ -38,6 +42,7 @@ def block(content: List[Token], indent: int = 0) -> Block:
         indent=indent,
     )
 
+SUPEROOT_BLOCK = block([Token('REF', '~')], -1)
 
 def tokenize(line_text: str) -> List[Token]:
     '''Convert a string into tokens'''
@@ -54,7 +59,7 @@ def tokenize(line_text: str) -> List[Token]:
 
 def parse(lines: List[str]) -> List[Block]:
     '''Read a list of strings into a list of blocks'''
-    blocks: List[Block] = []
+    blocks: List[Block] = [SUPEROOT_BLOCK]
     for line in lines:
         line = line.replace('\n', '')
         if line:
@@ -82,9 +87,6 @@ def filter_blocks(
 def block_contains_value(blk: Block, value: str) -> bool:
     '''Returns whether a token in <block>'s content has <value>'''
     return value in [x.value for x in blk.content]
-
-
-SUPEROOT_BLOCK = block([Token('REF', '~')], -1)
 
 
 def resolve_parent(child: Block, blocks: List[Block]) -> Block:
@@ -150,27 +152,3 @@ def get_links_in(
             if blk in b_out[link_type]:
                 links_in[link_type].append(b)
     return links_in
-
-
-ALL_LINKS = {
-    'references': resolve_block_references,
-    'children': resolve_immediate_children
-}
-
-BLOCKS = parse(re.split(r'(\s*\-.*\n)', '''
-- [[G.W.]]
-    - crossed the Delaware
-    - was the first [[President]]
-    - led the [[American Revolution]]
-- [[President]]
-    - the highest ranking American government position
-    - **not** a king!
-        - America was founded to escape monarchy/tyranny
-- The [[American Revolution]] began in 1765
-    - the [[War]] didn't start until 1775 though
-'''))
-
-
-x = resolve_reference('[[President]]', BLOCKS)
-print(x)
-pprint(dict(get_links_in(x, BLOCKS, ALL_LINKS)))
