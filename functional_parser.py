@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pprint import pprint
 import re
 from typing import List, Callable, Dict
+import hashlib
 
 @dataclass
 class Token:
@@ -37,7 +38,7 @@ class Block:
 def block(content: List[Token], indent: int = 0) -> Block:
     '''Returns a block with an id generated based on <content>'''
     return Block(
-        id=hex(hash(str(content)))[2:],
+        id=hex(int(hashlib.md5(str([x.value for x in content]).encode()).hexdigest(), 16)),
         content=content,
         indent=indent,
     )
@@ -152,3 +153,32 @@ def get_links_in(
             if blk in b_out[link_type]:
                 links_in[link_type].append(b)
     return links_in
+
+ALL_LINKS = {
+    'references': resolve_block_references,
+    'children': resolve_immediate_children
+}
+
+BLOCKS = parse(re.split(r'(\s*\-.*\n)', '''
+- [[G.W.]]
+    - crossed the Delaware
+    - was the first [[President]]
+    - led the [[American_Revolution]]
+- [[President]]
+    - the highest ranking American government position
+    - **not** a king!
+        - America was founded to escape monarchy/tyranny
+- The [[American_Revolution]] began in 1765
+    - the [[War]] didn't start until 1775 though
+    - marks the foundation of [[America]]
+        - Led by [[G.W.]]
+'''))
+
+id_to_block = {}
+for b in BLOCKS:
+    id_to_block[b.id] = b
+
+id_to_block['~'] = resolve_reference('~', BLOCKS)
+
+def block_by_id(id: str) -> Block:
+    return id_to_block[id]
