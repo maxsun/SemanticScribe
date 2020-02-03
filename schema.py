@@ -7,29 +7,29 @@ import functional_parser as parser
 
 class LinkOut(ObjectType):
 
-    children = List(String)
-    references = List(String)
+    children = List(lambda: Block)
+    references = List(lambda: Block)
 
     def resolve_children(block, info):
         l = parser.get_links_out(block, parser.BLOCKS, {'children': parser.ALL_LINKS['children']})
-        return [x.id for x in l['children']]
+        return [x for x in l['children']]
 
     def resolve_references(block, info):
         l = parser.get_links_out(block, parser.BLOCKS, {'references': parser.ALL_LINKS['references']})
-        return [x.id for x in l['references']]
+        return [x for x in l['references']]
 
 class LinkIn(ObjectType):
 
-    children = List(String)
-    references = List(String)
+    children = List(lambda: Block)
+    references = List(lambda: Block)
 
     def resolve_children(block, info):
         l = parser.get_links_in(block, parser.BLOCKS, {'children': parser.ALL_LINKS['children']})
-        return [x.id for x in l['children']]
+        return [x for x in l['children']]
 
     def resolve_references(block, info):
         l = parser.get_links_in(block, parser.BLOCKS, {'references': parser.ALL_LINKS['references']})
-        return [x.id for x in l['references']] 
+        return [x for x in l['references']] 
 
 
 class Token(ObjectType):
@@ -47,7 +47,6 @@ class Block(ObjectType):
         return block.id
 
     def resolve_content(block, info):
-        print('>>>', block)
         return block.content
 
     def resolve_linkIn(block, info):
@@ -55,7 +54,6 @@ class Block(ObjectType):
 
     def resolve_linkOut(block, info):
         return block
-
 
 class Query(ObjectType):
     block = Field(Block, id=String(default_value='~'))
