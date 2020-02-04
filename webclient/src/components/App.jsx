@@ -12,10 +12,10 @@ export default class App extends React.Component {
 
   render() {
     const url = new URL(window.location);
-    const ref = url.searchParams.get('ref') || '~';
+    const id = url.searchParams.get('id') || '~';
     return (
       <div id="App">
-        <TextBlock reference={ref} />
+        <TextBlock id={id} />
       </div>
     );
   }

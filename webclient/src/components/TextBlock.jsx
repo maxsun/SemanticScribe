@@ -2,6 +2,54 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './styles/TextBlock.css';
 
+
+function makeQuery(id, callback, depth = 2) {
+  const query = ` query{
+        block(id:"${id}") {
+          content {
+            value,
+            type
+          },
+          id,
+          linkIn {
+            children,
+            references
+          },
+          linkOut {
+            children,
+            references
+          }
+        }
+      }`;
+  const url = 'http://127.0.0.1:5000/graphql';
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query }),
+  }).then((res) => res.json())
+    .then((response) => {
+      if (depth === 0) {
+        callback(response);
+      } else {
+        let contextLinks = [];
+        if (response.data.block.linkIn) {
+          Object.keys(response.data.block.linkIn).forEach((linkType) => {
+            contextLinks = contextLinks.concat(response.data.block.linkIn[linkType])
+          });
+        }
+        if (response.data.block.linkOut) {
+          Object.keys(response.data.block.linkOut).forEach((linkType) => {
+            contextLinks = contextLinks.concat(response.data.block.linkOut[linkType])
+          });
+        }
+        console.log(contextLinks);
+
+      }
+    })
+    .catch(console.error);
+}
+
+
 export default class TextBlock extends React.Component {
   constructor(props) {
     super();
@@ -17,83 +65,54 @@ export default class TextBlock extends React.Component {
 
   // eslint-disable-next-line class-methods-use-this
   load(props) {
-    fetch(`http://localhost:5000/b/${props.reference}`, {
-      method: 'get',
-    }).then((response) => response.json())
-      .then((textblock) => {
-        this.setState({ content: textblock.content });
-        this.setState({ children: textblock.children });
-        this.setState({ id: textblock.id });
+    makeQuery(props.id, (response) => {
+      const blockData = response.data.block;
+      this.setState({
+        id: blockData.id,
+        content: blockData.content,
+        linkIn: blockData.linkIn,
+        linkOut: blockData.linkOut,
       });
-
-    fetch(`http://localhost:5000/o/${props.reference}`, {
-      method: 'get',
-    }).then((response) => response.json())
-      .then((occurences) => {
-        this.setState({ occurences });
-      });
+    });
   }
 
-  render() {
+  renderContent() {
     const { content } = this.state;
-    const { children } = this.state;
-    const { occurences } = this.state;
-    const { id } = this.state;
-    const { depth } = this.props;
-    let data = <span>Loading...</span>;
-    let childrenElem = <span>Loading...</span>;
-    let linksElem = <span>Loading...</span>;
-    let permalink = <span>Loading...</span>;
-    if (content !== undefined) {
-      data = content.map((token) => {
-        if (token.type === 'TXT') {
-          return <span className="txt">{` ${token.value} `}</span>;
-        }
+    if (content) {
+      return content.map((token) => {
         if (token.type === 'REF') {
-          return <a href={`?ref=${token.data}`} className="ref">{`${token.value}`}</a>;
+          return <a href={`?ref=${token.value}`}>{token.value}</a>;
         }
-        return null;
+        return <span>{` ${token.value}`}</span>;
       });
     }
-    if (depth <= 0) {
-      childrenElem = null;
-      linksElem = null;
-    } else {
-      if (children !== undefined) {
-        childrenElem = children.map((child) => <li><TextBlock depth={0} reference={child.id} /></li>);
-      }
-      if (occurences !== undefined) {
-        linksElem = occurences.map((block) => <li><TextBlock depth={0} reference={block.id} /></li>);
-      }
+    return null;
+  }
+
+  renderChildren() {
+    const { linkOut } = this.state;
+    if (linkOut) {
+      console.log(linkOut);
     }
-    if (id !== undefined) {
-      permalink = <a className="blocklink" href={`?ref=${id}`}>{id}</a>;
-    }
+  }
+
+
+  render() {
     return (
       <div className="textblock">
-        {permalink}
-        <div>{ data }</div>
-        {children ? <ul className="children">{ childrenElem }</ul> : <span></span>}
-        {linksElem && linksElem.length > 0
-          ? (
-            <div>
-              <hr></hr>
-              <span className="linksTitle">Links:</span>
-              <ul className="links">{linksElem}</ul>
-            </div>
-          )
-          : <span />}
+        {this.renderContent()}
+        {this.renderChildren()}
       </div>
     );
   }
 }
 
 TextBlock.defaultProps = {
-  reference: '0',
-  depth: 2,
+  // reference: '0',
+  // depth: 2,
 };
 
 TextBlock.propTypes = {
-  reference: PropTypes.string,
-  depth: PropTypes.number,
+  // reference: PropTypes.string,
+  // depth: PropTypes.number,
 };
