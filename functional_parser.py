@@ -16,6 +16,7 @@ class Token:
     '''
     type: str
     value: str
+    target: str = ''
 
 
 @dataclass
@@ -173,6 +174,12 @@ BLOCKS = parse(re.split(r'(\s*\-.*\n)', '''
     - marks the foundation of [[America]]
         - Led by [[G.W.]]
 '''))
+
+all_refs = set()
+for b in BLOCKS:
+    for token in b.content:
+        if not resolve_reference(token.value, BLOCKS) in BLOCKS:
+            BLOCKS.append(resolve_reference(token.value, BLOCKS))
 
 id_to_block = {}
 for b in BLOCKS:
