@@ -35,6 +35,10 @@ class LinkIn(ObjectType):
 class Token(ObjectType):
     type = String()
     value = String()
+    target = String()
+
+    def resolve_target(token, info):
+        return parser.resolve_reference(token.value, parser.BLOCKS).id
 
 
 class Block(ObjectType):
