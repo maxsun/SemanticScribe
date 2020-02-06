@@ -105,8 +105,16 @@ def resolve_parent(child: Block, blocks: List[Block]) -> Block:
 
 def resolve_immediate_children(parent: Block, blocks: List[Block]) -> List[Block]:
     '''Returns all blocks which have <parent> as their parent.'''
-    if parent not in blocks:
-        return []
+    if parent.content == SUPEROOT_BLOCK.content:
+        print('FINDING ROOT BLOCKS')
+        return filter_blocks(
+            blocks,
+            # need to check indent here to weed out artifical blocks
+            lambda b: b.indent >= 0 and resolve_parent(b, blocks) == SUPEROOT_BLOCK
+        )
+    # if parent not in blocks:
+    #     return []
+    print(parent)
     return filter_blocks(
         blocks[blocks.index(parent) + 1:],
         lambda b: resolve_parent(b, blocks) == parent
@@ -119,7 +127,7 @@ def resolve_reference(ref_value: str, blocks: List[Block]) -> Block:
         if len(blk.content) == 1 and len(blk.content[0].type) == 'REF':
             if blk.content[0].value == ref_value:
                 return blk
-    return block([Token('REF', ref_value)], indent=0)
+    return block([Token('REF', ref_value)], indent=-1)
 
 
 def resolve_block_references(blk, blocks):
@@ -178,14 +186,23 @@ BLOCKS = parse(re.split(r'(\s*\-.*\n)', '''
 all_refs = set()
 for b in BLOCKS:
     for token in b.content:
-        if not resolve_reference(token.value, BLOCKS) in BLOCKS:
-            BLOCKS.append(resolve_reference(token.value, BLOCKS))
+        if token.type == 'REF':
+            all_refs.add(token.value)
+
+for ref in all_refs:
+    print('======')
+    # print(ref)
+    # print([x.content[0] for x in BLOCKS if len(x.content) == 1])
+    if ref not in [x.content[0].value for x in BLOCKS if len(x.content) == 1]:
+        print('!!!', ref)
+        BLOCKS.append(resolve_reference(ref, BLOCKS))
 
 id_to_block = {}
 for b in BLOCKS:
     id_to_block[b.id] = b
 
-id_to_block['~'] = resolve_reference('~', BLOCKS)
+pprint(id_to_block)
+# id_to_block['~'] = resolve_reference('~', BLOCKS)
 
 def block_by_id(id: str) -> Block:
     return id_to_block[id]

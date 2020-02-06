@@ -2,60 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './styles/TextBlock.css';
 
-
-function makeQuery(id, callback, depth = 2) {
-  const query = ` query{
-        block(id:"${id}") {
-          content {
-            value,
-            type
-          },
-          id,
-          linkIn {
-            children,
-            references
-          },
-          linkOut {
-            children,
-            references
-          }
-        }
-      }`;
-  const url = 'http://127.0.0.1:5000/graphql';
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  }).then((res) => res.json())
-    .then((response) => {
-      if (depth === 0) {
-        callback(response);
-      } else {
-        let contextLinks = [];
-        if (response.data.block.linkIn) {
-          Object.keys(response.data.block.linkIn).forEach((linkType) => {
-            contextLinks = contextLinks.concat(response.data.block.linkIn[linkType])
-          });
-        }
-        if (response.data.block.linkOut) {
-          Object.keys(response.data.block.linkOut).forEach((linkType) => {
-            contextLinks = contextLinks.concat(response.data.block.linkOut[linkType])
-          });
-        }
-        console.log(contextLinks);
-
-      }
-    })
-    .catch(console.error);
-}
-
-
 export default class TextBlock extends React.Component {
   constructor(props) {
     super();
+    if (props.data) {
+      this.state = {
+        content: props.data.content,
+        id: props.data.id,
+        linkIn: props.data.linkIn,
+        linkOut: props.data.linkOut,
+      };
+    }
     this.load(props);
-    this.state = {
-    };
   }
 
   // eslint-disable-next-line camelcase
@@ -63,25 +21,25 @@ export default class TextBlock extends React.Component {
     this.load(props);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   load(props) {
-    makeQuery(props.id, (response) => {
-      const blockData = response.data.block;
+    if (props.data) {
       this.setState({
-        id: blockData.id,
-        content: blockData.content,
-        linkIn: blockData.linkIn,
-        linkOut: blockData.linkOut,
+        content: props.data.content,
+        id: props.data.id,
+        linkIn: props.data.linkIn,
+        linkOut: props.data.linkOut || null,
       });
-    });
+    }
   }
 
   renderContent() {
-    const { content } = this.state;
-    if (content) {
+    if (this.state && this.state.content) {
+      const { content } = this.state;
+      const { linkOut } = this.state;
       return content.map((token) => {
         if (token.type === 'REF') {
-          return <a href={`?ref=${token.value}`}>{token.value}</a>;
+          console.log(token);
+          return <a className="ref" href={`?id=${token.target}`}>{` ${token.value}`}</a>;
         }
         return <span>{` ${token.value}`}</span>;
       });
@@ -89,19 +47,73 @@ export default class TextBlock extends React.Component {
     return null;
   }
 
-  renderChildren() {
-    const { linkOut } = this.state;
-    if (linkOut) {
-      console.log(linkOut);
+  renderLinkOut() {
+    const results = [];
+    if (this.state && this.state.linkOut) {
+      const { linkOut } = this.state;
+      return (
+        <div>
+          {Object.keys(linkOut).map((linktype) => (
+            <div>
+              {linkOut[linktype].length > 0 ? (
+                <div>
+                  <hr />
+                  <h3>{`${linktype} (in):`}</h3>
+                </div>
+              ) : null}
+              <ul>
+                {linkOut[linktype].map((link) => <li><TextBlock data={link} /></li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      );
     }
+    return results;
   }
 
+  renderLinkIn() {
+    const results = [];
+    if (this.state && this.state.linkIn) {
+      const { linkIn } = this.state;
+      return Object.keys(linkIn).map((linktype) => (
+        <div>
+          {linkIn[linktype].length > 0 ? (
+            <div>
+              <hr />
+              <h3>{`${linktype} (in):`}</h3>
+            </div>
+          ) : null}
+          <ul>
+            {linkIn[linktype].map((link) => <li><TextBlock data={link} /></li>)}
+          </ul>
+        </div>
+      ));
+    }
+    return results;
+  }
+
+  renderId() {
+    if (this.state && this.state.id) {
+      const { id } = this.state;
+      console.log(id);
+      return <a className="textblockLink" href={`?id=${id}`}>></a>;
+    }
+    return null;
+  }
 
   render() {
+    console.log('rendering...', this.state);
     return (
       <div className="textblock">
-        {this.renderContent()}
-        {this.renderChildren()}
+        {this.renderId()}
+        <div className="content">{this.renderContent()}</div>
+        <div className="linkOut">
+          {this.renderLinkOut()}
+        </div>
+        <div className="linkIn">
+          {this.renderLinkIn()}
+        </div>
       </div>
     );
   }

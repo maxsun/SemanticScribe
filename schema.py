@@ -12,6 +12,7 @@ class LinkOut(ObjectType):
 
     def resolve_children(block, info):
         l = parser.get_links_out(block, parser.BLOCKS, {'children': parser.ALL_LINKS['children']})
+        print(l)
         return [x for x in l['children']]
 
     def resolve_references(block, info):
