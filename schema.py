@@ -1,7 +1,5 @@
 from graphene import ObjectType, String, Schema, Field, List
 from graphene.test import Client
-from pprint import pprint
-import re
 
 import functional_parser as parser
 
@@ -12,7 +10,6 @@ class LinkOut(ObjectType):
 
     def resolve_children(block, info):
         l = parser.get_links_out(block, parser.BLOCKS, {'children': parser.ALL_LINKS['children']})
-        print(l)
         return [x for x in l['children']]
 
     def resolve_references(block, info):
@@ -30,6 +27,7 @@ class LinkIn(ObjectType):
 
     def resolve_references(block, info):
         l = parser.get_links_in(block, parser.BLOCKS, {'references': parser.ALL_LINKS['references']})
+        print('RESOLVING LINK IN REFS FOR:', block)
         return [x for x in l['references']] 
 
 

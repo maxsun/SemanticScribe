@@ -32,6 +32,9 @@ class Block:
     content: List[Token]
     indent: int
 
+    def __eq__(self, other) -> bool:
+        return self.id == other.id
+
     def __repr__(self):
         return self.id + ': ' + ' '.join([x.value for x in self.content])
 
@@ -106,7 +109,6 @@ def resolve_parent(child: Block, blocks: List[Block]) -> Block:
 def resolve_immediate_children(parent: Block, blocks: List[Block]) -> List[Block]:
     '''Returns all blocks which have <parent> as their parent.'''
     if parent.content == SUPEROOT_BLOCK.content:
-        print('FINDING ROOT BLOCKS')
         return filter_blocks(
             blocks,
             # need to check indent here to weed out artifical blocks
@@ -114,7 +116,6 @@ def resolve_immediate_children(parent: Block, blocks: List[Block]) -> List[Block
         )
     # if parent not in blocks:
     #     return []
-    print(parent)
     return filter_blocks(
         blocks[blocks.index(parent) + 1:],
         lambda b: resolve_parent(b, blocks) == parent
@@ -190,11 +191,7 @@ for b in BLOCKS:
             all_refs.add(token.value)
 
 for ref in all_refs:
-    print('======')
-    # print(ref)
-    # print([x.content[0] for x in BLOCKS if len(x.content) == 1])
     if ref not in [x.content[0].value for x in BLOCKS if len(x.content) == 1]:
-        print('!!!', ref)
         BLOCKS.append(resolve_reference(ref, BLOCKS))
 
 id_to_block = {}

@@ -20,16 +20,14 @@ function makeQuery(id, callback) {
               type,
               target
             }
-            linkOut {
-              children {
-                id
-                content {
-                  value,
-                  type,
-                  target
-                }
-              }
-            },
+          }
+          references {
+            id
+            content {
+              value,
+              type,
+              target
+            }
           }
         },
         linkIn {

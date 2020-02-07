@@ -35,10 +35,8 @@ export default class TextBlock extends React.Component {
   renderContent() {
     if (this.state && this.state.content) {
       const { content } = this.state;
-      const { linkOut } = this.state;
       return content.map((token) => {
         if (token.type === 'REF') {
-          console.log(token);
           return <a className="ref" href={`?id=${token.target}`}>{` ${token.value}`}</a>;
         }
         return <span>{` ${token.value}`}</span>;
@@ -58,7 +56,7 @@ export default class TextBlock extends React.Component {
               {linkOut[linktype].length > 0 ? (
                 <div>
                   <hr />
-                  <h3>{`${linktype} (in):`}</h3>
+                  <h3>{`${linktype} (out):`}</h3>
                 </div>
               ) : null}
               <ul>
@@ -96,14 +94,12 @@ export default class TextBlock extends React.Component {
   renderId() {
     if (this.state && this.state.id) {
       const { id } = this.state;
-      console.log(id);
       return <a className="textblockLink" href={`?id=${id}`}>></a>;
     }
     return null;
   }
 
   render() {
-    console.log('rendering...', this.state);
     return (
       <div className="textblock">
         {this.renderId()}
