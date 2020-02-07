@@ -1,7 +1,7 @@
 from graphene import ObjectType, String, Schema, Field, List
 from graphene.test import Client
 
-import functional_parser as parser
+import parser as parser
 
 class LinkOut(ObjectType):
 

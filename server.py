@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
-import functional_parser as parser
+import parser as parser
 import re
 
 from flask_graphql import GraphQLView
