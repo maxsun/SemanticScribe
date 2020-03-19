@@ -8,26 +8,16 @@ from typing import Callable, Dict, List, NamedTuple, Tuple
 import spex_automata as A
 import spex_types as T
 
-text_path = './sherlock.txt'
-text = open(text_path).read()
 
-patterns = {
-    'word': re.compile(r'\b\w+\b'),
-    'punct': re.compile(r'[.,\/#!$%\^&\*;:{}=\-_`~()]'),
-    'caps': re.compile(r'[A-Z]'),
-    'sent_end': re.compile(r'[.!?]'),
-    'whitespace': re.compile(r'\s+'),
-    'newline': re.compile(r'\n')
-}
+def first_pass_process(patterns: Dict, text: str) -> T.TokenSetFast:
+    tokens = []
+    for pat_type, pat in patterns.items():
+        for m in re.finditer(pat, text):
+            r = T.Range(m.span(0)[0], m.span(0)[1])
+            tokens.append(T.Token(pat_type, m.group(0), r))
 
-
-tokens = []
-for pat_type, pat in patterns.items():
-    for m in re.finditer(pat, text):
-        r = T.Range(m.span(0)[0], m.span(0)[1])
-        tokens.append(T.Token(pat_type, m.group(0), r))
-
-tokens = T.TokenSetFast(tokens)
+    tokens = T.TokenSetFast(tokens)
+    return tokens
 
 
 def process(patterns: Dict, tokens: List[T.Token]) -> T.TokenSetFast:
@@ -79,12 +69,29 @@ paras.add_relation('sent', 'nl2')
 # paras.add_relation('nl', 'nl2')
 paras.draw()
 
-x = process({
-    'cap_word': cap_words2.match,
-    'sent': lambda x: rules.find(x, 100, 'cw'),
-    'para': lambda x: paras.find(x, 2, 'nl')
-}, tokens)
 
-# pprint(len(x))
+# text_path = './sherlock.txt'
+# text = open(text_path).read()
 
-pprint(x.filter(lambda x: x.type == 'para'))
+# reg_pats = {
+#     'word': re.compile(r'\b\w+\b'),
+#     'punct': re.compile(r'[.,\/#!$%\^&\*;:{}=\-_`~()]'),
+#     'caps': re.compile(r'[A-Z]'),
+#     'sent_end': re.compile(r'[.!?]'),
+#     'whitespace': re.compile(r'\s+'),
+#     'newline': re.compile(r'\n')
+# }
+
+# tokens = first_pass_process(reg_pats, text)
+# print('# punct fount:', len(tokens.filter(lambda x: x.type == 'punct')))
+
+
+# x = process({
+#     'cap_word': cap_words2.match,
+#     'sent': lambda x: rules.find(x, 100, 'cw'),
+#     'para': lambda x: paras.find(x, 2, 'nl')
+# }, tokens)
+
+# # pprint(len(x))
+
+# pprint(x.filter(lambda x: x.type == 'para'))
