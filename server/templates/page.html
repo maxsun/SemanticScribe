@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+    <script src="{{url_for('static', filename='index.js')}}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                blockMath: [['$$','$$']],
+                processEscapes: true
+              }
+            });
+    </script>
+</head>
+
+<body>
+    <div id="display">
+        <div id="header">
+            <h3>Snake Eating Itself</h3>
+        </div>
+        <div id="content">
+            {{ content|safe }}
+        </div>
+    </div>
+</body>
+
+</html>
