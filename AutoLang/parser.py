@@ -123,32 +123,6 @@ class Block:
     def __repr__(self):
         return ' '.join(self.content)
 
-    
-GRAMMAR = r"""
-    ?start: (_NL* block)* -> start
-    block: "- " content _NL children
-    children: [_INDENT block* _DEDENT]
-    
-    content: (text|reference)+
-    text: (WORD)+
-    reference: "[[" (WORD)+ "]]"
-    
-    WORD: /([^(\[|\]|\s)])/+
-    
-    %import common.LETTER
-    %import common.DIGIT
-    %import common.WS_INLINE
-    %declare _INDENT _DEDENT
-    %ignore WS_INLINE
-    _NL: /(\r?\n(\s)*)+/
-"""
-
-PARSER = Lark(
-    GRAMMAR,
-    parser='lalr',
-    postlex=TreeIndenter(),
-    transformer=BTransformer())
-
 
 def parse_blocks(text):
     return PARSER.parse(text).children
@@ -201,18 +175,17 @@ def resolve_ref_block(ref_text, root_block):
     return block
     
 
+GRAMMAR = open('./grammar.lark').read()
+
+PARSER = Lark(
+    GRAMMAR,
+    parser='lalr',
+    postlex=TreeIndenter(),
+    transformer=BTransformer())
+
+
 NOTES_FOLDER = './note_files/'
 notes_data = parse_notefiles(NOTES_FOLDER)
-# notes_data.show()
-
-# resolve_ref_block('/1/1', notes_data).show()
-# resolve_ref_block('cool', notes_data).show() # Need to join disconnected blocks!
-# resolve_ref_block('Example1', notes_data).show()
-
-
-
-# %matplotlib inline
-# %config InlineBackend.figure_format = 'retina'
 
 G = nx.DiGraph()
 
@@ -233,12 +206,3 @@ options = {
 }
 
 print(to_agraph(G))
-
-# def display_graph(g, filename='viz.png'):
-#     A = to_agraph(g)
-#     A.layout('dot')
-#     A.draw(filename)
-#     display(Image(filename))
-#     os.remove(filename)
-
-# display_graph(G)
