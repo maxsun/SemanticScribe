@@ -5,11 +5,9 @@ import markdown
 
 from spex_types import *
 
-
 app = Flask(__name__, static_folder='./static', template_folder='./templates')
 CORS(app)
 
-# app.astatic_folder="./", ate_folder='./templates')
 CORS(app)
 
 
