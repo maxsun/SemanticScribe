@@ -125,13 +125,13 @@ class Block:
 
 
 def parse_blocks(text):
-    return PARSER.parse(text).children
+    return [Block.fromTree(x) for x in PARSER.parse(text).children]
 
 
 def parse_notefile(note_path):
     text = open(note_path).read() + '\n'
     note_title = os.path.basename(note_path).replace('.md', '')
-    blocks = [Block.fromTree(x) for x in parse_blocks(text)]
+    blocks = parse_blocks(text)
     root_text = [Token('REF', note_title)]
     return Block(content=root_text, children=blocks)
 
