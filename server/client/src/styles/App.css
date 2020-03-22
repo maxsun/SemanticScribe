@@ -1,0 +1,9 @@
+
+.App {
+  /* border: solid 1px red; */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* padding: var(--med-padding); */
+}

@@ -70,28 +70,28 @@ paras.add_relation('sent', 'nl2')
 paras.draw()
 
 
-# text_path = './sherlock.txt'
-# text = open(text_path).read()
+text_path = './sherlock.txt'
+text = open(text_path).read()
 
-# reg_pats = {
-#     'word': re.compile(r'\b\w+\b'),
-#     'punct': re.compile(r'[.,\/#!$%\^&\*;:{}=\-_`~()]'),
-#     'caps': re.compile(r'[A-Z]'),
-#     'sent_end': re.compile(r'[.!?]'),
-#     'whitespace': re.compile(r'\s+'),
-#     'newline': re.compile(r'\n')
-# }
+reg_pats = {
+    'word': re.compile(r'\b\w+\b'),
+    'punct': re.compile(r'[.,\/#!$%\^&\*;:{}=\-_`~()]'),
+    'caps': re.compile(r'[A-Z]'),
+    'sent_end': re.compile(r'[.!?]'),
+    'whitespace': re.compile(r'\s+'),
+    'newline': re.compile(r'\n')
+}
 
-# tokens = first_pass_process(reg_pats, text)
-# print('# punct fount:', len(tokens.filter(lambda x: x.type == 'punct')))
+tokens = first_pass_process(reg_pats, text)
+print('# punct fount:', len(tokens.filter(lambda x: x.type == 'punct')))
 
 
-# x = process({
-#     'cap_word': cap_words2.match,
-#     'sent': lambda x: rules.find(x, 100, 'cw'),
-#     'para': lambda x: paras.find(x, 2, 'nl')
-# }, tokens)
+x = process({
+    'cap_word': cap_words2.match,
+    'sent': lambda x: rules.find(x, 100, 'cw'),
+    'para': lambda x: paras.find(x, 2, 'nl')
+}, tokens)
 
-# # pprint(len(x))
+# pprint(len(x))
 
-# pprint(x.filter(lambda x: x.type == 'para'))
+pprint(x.filter(lambda x: x.type == 'para'))

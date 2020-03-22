@@ -1,0 +1,19 @@
+
+.panelController {
+    border: solid 1px;
+    /* max-height: 300px; */
+    padding: var(--small-padding);
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.panelDisplay {
+    /* display: flex; */
+    overflow-y: scroll;
+    overflow-x: scroll;
+    max-height: 100%;
+    max-width: 100%;
+    flex: 1;
+}
