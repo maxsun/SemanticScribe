@@ -13,8 +13,6 @@ from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 
 import os
 
-NOTES_FOLDER = './note_files/'
-NOTE_PATHS = [x for x in os.listdir(NOTES_FOLDER) if x.endswith('.md')]
 
 def display_tree(t, filename='viz.png'):
     larkTree.pydot__tree_to_png(t, filename)
@@ -183,26 +181,3 @@ PARSER = Lark(
     postlex=TreeIndenter(),
     transformer=BTransformer())
 
-
-NOTES_FOLDER = './note_files/'
-notes_data = parse_notefiles(NOTES_FOLDER)
-
-G = nx.DiGraph()
-
-all_references = notes_data.get_refs(depth=100)
-for x in all_references:
-    G.add_node(x)
-    block = resolve_ref_block(x, notes_data)
-    for ref in block.get_refs(depth=1):
-        if x != ref:
-            G.add_edge(x, ref)
-
-options = {
-    'node_color': 'lightblue',
-    'node_size': 100,
-    'width': 1,
-    'arrowstyle': '-|>',
-    'arrowsize': 12,
-}
-
-print(to_agraph(G))
